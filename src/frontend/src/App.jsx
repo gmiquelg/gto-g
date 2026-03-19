@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from '@/Pages/Home';
 import Train from '@/Pages/Trainer/Train';
+import Study from '@/Pages/Study/Study';
 
 function App() {
     return (
@@ -8,8 +9,8 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/train" element={<Train />} />
+                <Route path="/study" element={<Study />} />
                 {/* Add more pages here later! Example: */}
-                {/* <Route path="/about" element={<About />} /> */}
             </Routes>
         </Router>
     );
