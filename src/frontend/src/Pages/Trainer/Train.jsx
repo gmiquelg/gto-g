@@ -19,19 +19,18 @@ const Train = () => {
     return (
         <MainLayout>
             <div className="flex flex-col w-full">
-                <GreyTitleLayout title="Trainer" />
                 <PageContainer>
-                    <div className="flex flex-col items-center mt-[5rem]">
-                        <div className="relative w-[40rem] h-[20rem] rounded-full border-4 border-gray-300 flex items-center justify-center">
+                    <div className="flex flex-col items-center mt-[10rem]">
+                        <div className="relative w-[40rem] h-[20rem] rounded-full border-4 border-[#2e2e2e] flex items-center justify-center">
                             {seatStyles.map((style, index) => (
                                 <button key={index}
-                                    className={`absolute w-20 h-20 bg-white border-4 border-gray-200 rounded-full flex items-center justify-center font-bold text-gray-800 text-lg hover:bg-indigo-50 hover:border-indigo-500 hover:shadow-indigo-500/50 transition-all duration-200 ${style}`}
+                                    className={`absolute w-20 h-20 bg-[#2e2e2e] border-4 border-[#3f3f3f] rounded-full flex items-center justify-center font-bold text-gray-200 text-lg hover:border-[#fcd982] hover:shadow-[#fcd982]/50 transition-all duration-200 ${style}`}
                                 >
                                     {currentRoles[index]}
                                 </button>
                             ))}
                         </div>
-                        <button className="flex items-center mt-[6rem] bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-md">
+                        <button className="flex items-center mt-[6rem] border-2 border-[#fcd982] hover:bg-[#292416] text-[#fcd982] font-bold py-2 px-6 rounded-md">
                             <i className="bi bi-play-fill text-2xl mr-2"></i>
                             Start
                         </button>
