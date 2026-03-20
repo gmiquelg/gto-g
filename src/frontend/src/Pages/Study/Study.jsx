@@ -4,7 +4,7 @@ import PageContainer from '@/Layouts/PageLayout';
 
 const Study = () => {
     return (
-        <MainLayout>
+        <MainLayout title="Study">
             <div className="flex flex-col w-full mb-10">
                 <GreyTitleLayout title="Study" />
                 <PageContainer>
