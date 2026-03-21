@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import PageContainer from '@/Layouts/PageLayout';
 import Table from '@/Components/Trainer/Table';
+import HeroActions from '@/Components/Trainer/HeroActions';
+import { createHand } from '@/Engine/PreflopEngine';
 
 const Train = () => {
     const [positions, setPositions] = useState([]);
@@ -13,6 +15,10 @@ const Train = () => {
     const [isTraining, setIsTraining] = useState(false);
     const [rotationOffset, setRotationOffset] = useState(0);
     const [manualSelections, setManualSelections] = useState({});
+
+    // Engine state
+    const [gameState, setGameState] = useState(null);
+    const submitHeroActionRef = useRef(null);
 
     useEffect(() => {
         fetch('/api/train/positions')
@@ -27,32 +33,14 @@ const Train = () => {
             });
     }, []);
 
-    const getRandomCards = (count, exclude = []) => {
-        const suits = ['s', 'h', 'd', 'c'];
-        const values = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-        const result = [];
-        const used = new Set(exclude.map(c => `${c.value}${c.suit}`));
-
-        while (result.length < count) {
-            const suit = suits[Math.floor(Math.random() * suits.length)];
-            const value = values[Math.floor(Math.random() * values.length)];
-            const key = `${value}${suit}`;
-            if (!used.has(key)) {
-                used.add(key);
-                result.push({ value, suit });
-            }
-        }
-        return result;
-    };
-
     const handleStart = () => {
         if (positions.length < 2) return;
 
-        // 1. Identify current manual selections
+        // 1. Read only from manualSelections (pre-selected before START)
         let heroPos = null;
         let villainPos = null;
 
-        Object.entries(roles).forEach(([posId, role]) => {
+        Object.entries(manualSelections).forEach(([posId, role]) => {
             const pos = positions.find(p => String(p.id) === String(posId));
             if (role === 'hero') heroPos = pos;
             if (role === 'villain') villainPos = pos;
@@ -89,13 +77,20 @@ const Train = () => {
             [finalVillainPos.id]: 'villain'
         });
 
-        // 5. Generate Hero's 2 pocket cards
-        const hCards = getRandomCards(2);
-        setHeroCards(hCards);
+        // 5. Run the engine
+        const { gameState: gs, submitHeroAction } = createHand(
+            finalHeroPos.name,
+            finalVillainPos.name
+        );
 
-        // 6. Board cards: only generated for flop stage
+        setGameState(gs);
+        submitHeroActionRef.current = submitHeroAction;
+        setHeroCards(gs.heroHand);
+
+        // 6. Board cards (flop stage only)
         if (stage === 'flop') {
-            setCards(getRandomCards(3, hCards));
+            // For now we don't deal community cards in preflop-only mode
+            setCards([]);
         } else {
             setCards([]);
         }
@@ -109,6 +104,21 @@ const Train = () => {
         setHeroCards([]);
         setRoles({ ...manualSelections });
         setRotationOffset(0);
+        setGameState(null);
+        submitHeroActionRef.current = null;
+    };
+
+    const handleHeroAction = (action) => {
+        if (!submitHeroActionRef.current) return;
+        const newState = submitHeroActionRef.current(action);
+        setGameState({ ...newState });
+
+        console.log(`Hero: ${action}`, newState);
+
+        if (newState.handOver) {
+            console.log('Hand result:', newState.result);
+            console.log('Action history:', newState.actionHistory);
+        }
     };
 
     const handleSetRole = (posId, role) => {
@@ -135,7 +145,7 @@ const Train = () => {
     };
 
     return (
-        <MainLayout title="Train">
+        <MainLayout title="Trainer">
             <div className="flex flex-col w-full">
                 <PageContainer>
                     <div className="flex flex-col items-center mt-[10rem]">
@@ -149,10 +159,12 @@ const Train = () => {
                             rotationOffset={rotationOffset}
                             onSetRole={handleSetRole}
                             onClearRole={handleClearRole}
+                            pot={gameState?.pot}
+                            actionHistory={gameState?.actionHistory}
                         />
 
                         {/* Training Settings / Controls */}
-                        <div className="flex flex-col items-center mt-[6rem] gap-8">
+                        <div className="flex flex-col items-center mt-[6rem] gap-6">
                             {!isTraining ? (
                                 <>
                                     <div className="flex flex-col items-center gap-2">
@@ -189,13 +201,42 @@ const Train = () => {
                                     </button>
                                 </>
                             ) : (
-                                <button
-                                    onClick={handleStop}
-                                    className="flex items-center bg-brand-100 hover:bg-brand-200 hover:text-neutral-100 text-neutral-100 font-bold py-1 px-4 rounded-md transition-all group"
-                                >
-                                    <i className="bi bi-stop-fill text-2xl mr-2"></i>
-                                    STOP
-                                </button>
+                                <>
+                                    {/* Hero Action Buttons */}
+                                    {gameState?.heroToAct && !gameState?.handOver && (
+                                        <HeroActions
+                                            toCall={gameState.toCall}
+                                            onAction={handleHeroAction}
+                                        />
+                                    )}
+
+                                    {/* Hand result message */}
+                                    {gameState?.handOver && (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <p className="text-neutral-600 text-sm font-semibold">
+                                                {gameState.result === 'hero_fold' && 'You folded.'}
+                                                {gameState.result === 'hero_call' && `You called ${gameState.toCall}BB. Pot: ${gameState.pot}BB`}
+                                                {gameState.result === 'villain_fold' && 'Villain folded. You win!'}
+                                                {gameState.result === 'villain_call' && `Villain called. Pot: ${gameState.pot}BB`}
+                                            </p>
+                                            <button
+                                                onClick={handleStart}
+                                                className="flex items-center bg-brand-100 hover:bg-brand-200 hover:text-neutral-100 text-neutral-100 font-bold py-1 px-4 rounded-md transition-all group"
+                                            >
+                                                <i className="bi bi-arrow-clockwise text-xl mr-2"></i>
+                                                NEXT HAND
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={handleStop}
+                                        className="flex items-center bg-brand-100 hover:bg-brand-200 hover:text-neutral-100 text-neutral-100 font-bold py-1 px-4 rounded-md transition-all group"
+                                    >
+                                        <i className="bi bi-stop-fill text-2xl mr-2"></i>
+                                        STOP
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>
@@ -206,3 +247,4 @@ const Train = () => {
 };
 
 export default Train;
+
