@@ -1,4 +1,4 @@
-package com.backend.Models;
+package com.backend.Models.Menu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
@@ -30,7 +30,8 @@ public class MenuItem {
     @JsonIgnore
     private Menu menu;
 
-    public MenuItem() {}
+    public MenuItem() {
+    }
 
     public MenuItem(String name, String route, Integer order, Menu menu) {
         this.name = name;

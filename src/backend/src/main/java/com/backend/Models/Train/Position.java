@@ -1,4 +1,4 @@
-package com.backend.Models;
+package com.backend.Models.Train;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +19,8 @@ public class Position {
     @jakarta.persistence.Column(name = "`order`")
     private Integer order;
 
-    public Position() {}
+    public Position() {
+    }
 
     public Position(String name, Integer order) {
         this.name = name;

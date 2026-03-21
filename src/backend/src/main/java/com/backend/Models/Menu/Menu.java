@@ -1,4 +1,4 @@
-package com.backend.Models;
+package com.backend.Models.Menu;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +24,8 @@ public class Menu {
     @OneToMany(mappedBy = "menu", fetch = FetchType.EAGER)
     private List<MenuItem> items = new ArrayList<>();
 
-    public Menu() {}
+    public Menu() {
+    }
 
     public Menu(String code, String name) {
         this.code = code;

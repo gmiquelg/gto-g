@@ -1,7 +1,8 @@
 package com.backend.Controllers.Train;
 
-import com.backend.Models.Position;
-import com.backend.Repositories.PositionRepository;
+import com.backend.Models.Train.Position;
+import com.backend.Repositories.Train.PositionRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

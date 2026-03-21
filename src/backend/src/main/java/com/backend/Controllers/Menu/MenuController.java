@@ -1,8 +1,9 @@
-package com.backend.Controllers;
+package com.backend.Controllers.Menu;
 
-import com.backend.Models.Menu;
-import com.backend.Models.MenuItem;
-import com.backend.Repositories.MenuRepository;
+import com.backend.Models.Menu.Menu;
+import com.backend.Models.Menu.MenuItem;
+import com.backend.Repositories.Menu.MenuRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

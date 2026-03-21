@@ -1,8 +1,9 @@
-package com.backend.Repositories;
+package com.backend.Repositories.Train;
 
-import com.backend.Models.Position;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.backend.Models.Train.Position;
 
 import java.util.List;
 
