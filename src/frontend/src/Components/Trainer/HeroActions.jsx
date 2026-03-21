@@ -1,8 +1,6 @@
 import React from 'react';
 
 const HeroActions = ({ toCall, onAction }) => {
-    // If toCall > 1 (above the BB), Hero is facing a raise → show FOLD, CALL, RAISE
-    // If toCall <= 1 (just the BB / no raise), Hero is opening → show only FOLD, RAISE
     const facingRaise = toCall > 1;
 
     return (
