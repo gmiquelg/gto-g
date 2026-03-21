@@ -16,9 +16,9 @@ const Table = ({ positions, loading, cards, roles, isTraining, heroCards, rotati
     ];
 
     return (
-        <div className="relative w-[20rem] h-[30rem] lg:w-[35rem] lg:h-[15rem] rounded-full border-4 border-[#2e2e2e] flex items-center justify-center">
+        <div className="relative w-[20rem] h-[30rem] lg:w-[35rem] lg:h-[15rem] rounded-full border-4 border-neutral-300 flex items-center justify-center">
             {/* POKER CARDS */}
-            <div className="flex gap-1 w-[15rem] bg-[#2e2e2e] p-1 rounded-md border border-[#3f3f3f] shadow-xl">
+            <div className="flex gap-1 w-[15rem] bg-neutral-300 p-1 rounded-md border border-neutral-400 shadow-xl">
                 {[...Array(maxCards)].map((_, index) => (
                     <Card
                         key={index}
@@ -56,13 +56,13 @@ const Table = ({ positions, loading, cards, roles, isTraining, heroCards, rotati
                             {/* Role Selection Menu (Only when NOT training) */}
                             {isHovered && !role && !isTraining && (
                                 <div className="absolute -top-12 left-1/2 -translate-x-1/2 pb-4 z-20">
-                                    <div className="flex gap-1 bg-[#2e2e2e] p-1 rounded-md border border-[#3f3f3f] shadow-xl">
-                                        <button className="px-2 py-1 text-[10px] bg-[#fcd982] text-[#181818] font-bold rounded hover:bg-white transition-colors whitespace-nowrap"
+                                    <div className="flex gap-1 bg-neutral-300 p-1 rounded-md border border-neutral-400 shadow-xl">
+                                        <button className="px-2 py-1 text-[10px] bg-brand-100 text-neutral-100 font-bold rounded hover:bg-white transition-colors whitespace-nowrap"
                                             onClick={() => onSetRole(posId, 'hero')}
                                         >
                                             HERO
                                         </button>
-                                        <button className="px-2 py-1 text-[10px] bg-[#ff4d4d] text-white font-bold rounded hover:bg-[#ff6666] transition-colors whitespace-nowrap"
+                                        <button className="px-2 py-1 text-[10px] bg-danger-100 text-white font-bold rounded hover:bg-danger-200 transition-colors whitespace-nowrap"
                                             onClick={() => onSetRole(posId, 'villain')}
                                         >
                                             VILLAIN
@@ -73,7 +73,7 @@ const Table = ({ positions, loading, cards, roles, isTraining, heroCards, rotati
 
                             {/* Delete Button (X) (Only when NOT training) */}
                             {role && !isTraining && (
-                                <button className="absolute -top-1 -right-2 w-5 h-5 bg-[#3f3f3f] border border-[#4f4f4f] rounded-full flex items-center justify-center text-gray-400 hover:text-hover:bg-red-500 transition-all z-30"
+                                <button className="absolute -top-1 -right-2 w-5 h-5 bg-neutral-400 border border-neutral-500 rounded-full flex items-center justify-center text-gray-400 hover:text-hover:bg-red-500 transition-all z-30"
                                     onClick={() => onClearRole(posId)}
                                 >
                                     <i className="bi bi-x"></i>
@@ -83,12 +83,12 @@ const Table = ({ positions, loading, cards, roles, isTraining, heroCards, rotati
                             {/* Position Bubble */}
                             <div className={`w-full h-full rounded-full flex flex-col items-center justify-center font-bold transition-all duration-300 ${isTraining
                                 ? (isHero || isVillain
-                                    ? (isHero ? 'bg-[#2e2e2e] border-4 border-[#fcd982] shadow-[0_0_15px_rgba(252,217,130,0.4)] text-[#fcd982]'
-                                        : 'bg-[#2e2e2e] border-4 border-[#ff4d4d] shadow-[0_0_15px_rgba(255,77,77,0.3)] text-[#ff4d4d]')
-                                    : 'bg-[#181818] border-4 border-[#2e2e2e] text-[#2e2e2e]')
-                                : (isHero ? 'bg-[#2e2e2e] border-4 border-[#fcd982] shadow-[0_0_15px_rgba(252,217,130,0.4)] text-[#fcd982]' :
-                                    isVillain ? 'bg-[#2e2e2e] border-4 border-[#ff4d4d] shadow-[0_0_15px_rgba(255,77,77,0.3)] text-[#ff4d4d]' :
-                                        'bg-[#2e2e2e] border-4 border-[#3f3f3f] text-gray-200 hover:border-[#fcd982]/50')
+                                    ? (isHero ? 'bg-neutral-300 border-4 border-brand-100 shadow-[0_0_15px_rgba(252,217,130,0.4)] text-brand-100'
+                                        : 'bg-neutral-300 border-4 border-danger-100 shadow-[0_0_15px_rgba(255,77,77,0.3)] text-danger-100')
+                                    : 'bg-neutral-100 border-4 border-neutral-300 text-neutral-300')
+                                : (isHero ? 'bg-neutral-300 border-4 border-brand-100 shadow-[0_0_15px_rgba(252,217,130,0.4)] text-brand-100' :
+                                    isVillain ? 'bg-neutral-300 border-4 border-danger-100 shadow-[0_0_15px_rgba(255,77,77,0.3)] text-danger-100' :
+                                        'bg-neutral-300 border-4 border-neutral-400 text-gray-200 hover:border-brand-100/50')
                                 }`}
                             >
                                 <span className={isTraining && !isHero && !isVillain ? 'text-sm' : 'text-lg'}>

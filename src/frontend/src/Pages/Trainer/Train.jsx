@@ -12,6 +12,7 @@ const Train = () => {
     const [heroCards, setHeroCards] = useState([]);
     const [isTraining, setIsTraining] = useState(false);
     const [rotationOffset, setRotationOffset] = useState(0);
+    const [manualSelections, setManualSelections] = useState({});
 
     useEffect(() => {
         fetch('/api/train/positions')
@@ -47,31 +48,52 @@ const Train = () => {
     const handleStart = () => {
         if (positions.length < 2) return;
 
-        // 1. Pick two distinct random indices from positions array
-        const heroIdx = Math.floor(Math.random() * positions.length);
-        let villainIdx;
-        do {
-            villainIdx = Math.floor(Math.random() * positions.length);
-        } while (villainIdx === heroIdx);
+        // 1. Identify current manual selections
+        let heroPos = null;
+        let villainPos = null;
 
-        const heroPos = positions[heroIdx];
-        const villainPos = positions[villainIdx];
-
-        // 2. Rotation: visually move hero to seat index 3 (bottom-right on desktop)
-        const rot = (3 - heroIdx + 6) % 6;
-        setRotationOffset(rot);
-
-        // 3. Set roles (completely fresh, no merging)
-        setRoles({
-            [heroPos.id]: 'hero',
-            [villainPos.id]: 'villain'
+        Object.entries(roles).forEach(([posId, role]) => {
+            const pos = positions.find(p => String(p.id) === String(posId));
+            if (role === 'hero') heroPos = pos;
+            if (role === 'villain') villainPos = pos;
         });
 
-        // 4. Generate Hero's 2 pocket cards
+        // 2. Determine final positions (randomize if not selected)
+        let finalHeroPos = heroPos;
+        let finalVillainPos = villainPos;
+
+        if (!finalHeroPos && !finalVillainPos) {
+            const heroIdx = Math.floor(Math.random() * positions.length);
+            finalHeroPos = positions[heroIdx];
+            let villainIdx;
+            do {
+                villainIdx = Math.floor(Math.random() * positions.length);
+            } while (villainIdx === heroIdx);
+            finalVillainPos = positions[villainIdx];
+        } else if (!finalHeroPos) {
+            const available = positions.filter(p => String(p.id) !== String(finalVillainPos.id));
+            finalHeroPos = available[Math.floor(Math.random() * available.length)];
+        } else if (!finalVillainPos) {
+            const available = positions.filter(p => String(p.id) !== String(finalHeroPos.id));
+            finalVillainPos = available[Math.floor(Math.random() * available.length)];
+        }
+
+        // 3. Rotation: visually move hero to seat index 3 (bottom-right on desktop)
+        const finalHeroIdx = positions.findIndex(p => String(p.id) === String(finalHeroPos.id));
+        const rot = (3 - finalHeroIdx + 6) % 6;
+        setRotationOffset(rot);
+
+        // 4. Set roles (completely fresh, no merging)
+        setRoles({
+            [finalHeroPos.id]: 'hero',
+            [finalVillainPos.id]: 'villain'
+        });
+
+        // 5. Generate Hero's 2 pocket cards
         const hCards = getRandomCards(2);
         setHeroCards(hCards);
 
-        // 5. Board cards: only generated for flop stage
+        // 6. Board cards: only generated for flop stage
         if (stage === 'flop') {
             setCards(getRandomCards(3, hCards));
         } else {
@@ -85,27 +107,31 @@ const Train = () => {
         setIsTraining(false);
         setCards([]);
         setHeroCards([]);
-        setRoles({});
+        setRoles({ ...manualSelections });
         setRotationOffset(0);
     };
 
     const handleSetRole = (posId, role) => {
-        setRoles(prev => {
+        const updateRoles = (prev) => {
             const newRoles = { ...prev };
             Object.keys(newRoles).forEach(id => {
                 if (newRoles[id] === role) delete newRoles[id];
             });
             newRoles[posId] = role;
             return newRoles;
-        });
+        };
+        setRoles(updateRoles);
+        setManualSelections(updateRoles);
     };
 
     const handleClearRole = (posId) => {
-        setRoles(prev => {
+        const clearRole = (prev) => {
             const newRoles = { ...prev };
             delete newRoles[posId];
             return newRoles;
-        });
+        };
+        setRoles(clearRole);
+        setManualSelections(clearRole);
     };
 
     return (
@@ -130,14 +156,14 @@ const Train = () => {
                             {!isTraining ? (
                                 <>
                                     <div className="flex flex-col items-center gap-2">
-                                        <div className="flex items-center gap-2 font-semibold text-[#8a8a8a]">
+                                        <div className="flex items-center gap-2 font-semibold text-neutral-600">
                                             <p className="text-xs">Starting spot</p>
                                             <i className="bi bi-info-circle text-xs"></i>
                                         </div>
-                                        <div className="flex bg-[#252525] rounded-lg border border-[#3f3f3f]">
+                                        <div className="flex bg-neutral-200 rounded-lg border border-neutral-400">
                                             <button onClick={() => setStage('preflop')}
                                                 className={`px-4 py-1 rounded-md rounded-r-none font-semibold text-sm transition-all ${stage === 'preflop'
-                                                    ? 'bg-[#fcd982] text-[#181818] shadow-lg'
+                                                    ? 'bg-brand-100 text-neutral-100 shadow-lg'
                                                     : 'text-gray-400 hover:text-gray-200'
                                                     }`}
                                             >
@@ -145,7 +171,7 @@ const Train = () => {
                                             </button>
                                             <button onClick={() => setStage('flop')}
                                                 className={`px-4 py-1 rounded-md rounded-l-none font-semibold text-sm transition-all ${stage === 'flop'
-                                                    ? 'bg-[#fcd982] text-[#181818] shadow-lg'
+                                                    ? 'bg-brand-100 text-neutral-100 shadow-lg'
                                                     : 'text-gray-400 hover:text-gray-200'
                                                     }`}
                                             >
@@ -156,7 +182,7 @@ const Train = () => {
 
                                     <button
                                         onClick={handleStart}
-                                        className="flex items-center bg-[#fcd982] hover:bg-[#ffeec4] hover:text-[#181818] text-[#181818] font-bold py-1 px-4 rounded-md transition-all group"
+                                        className="flex items-center bg-brand-100 hover:bg-brand-200 hover:text-neutral-100 text-neutral-100 font-bold py-1 px-4 rounded-md transition-all group"
                                     >
                                         <i className="bi bi-play-fill text-2xl mr-2"></i>
                                         START
@@ -165,7 +191,7 @@ const Train = () => {
                             ) : (
                                 <button
                                     onClick={handleStop}
-                                    className="flex items-center bg-[#fcd982] hover:bg-[#ffeec4] hover:text-[#181818] text-[#181818] font-bold py-1 px-4 rounded-md transition-all group"
+                                    className="flex items-center bg-brand-100 hover:bg-brand-200 hover:text-neutral-100 text-neutral-100 font-bold py-1 px-4 rounded-md transition-all group"
                                 >
                                     <i className="bi bi-stop-fill text-2xl mr-2"></i>
                                     STOP

@@ -9,6 +9,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/gtogdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=gtoguser
       - SPRING_DATASOURCE_PASSWORD=gtogpass
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
     depends_on:
       db:
         condition: service_healthy

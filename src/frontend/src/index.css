@@ -3,9 +3,30 @@
 @tailwind utilities;
 
 :root {
+  --brand-100: #fcd982;
+  --brand-200: #ffeec4;
+  --neutral-100: #181818;
+  --neutral-200: #252525;
+  --neutral-300: #2e2e2e;
+  --neutral-400: #3f3f3f;
+  --neutral-500: #4f4f4f;
+  --neutral-600: #8a8a8a;
+
+  --danger-100: #ff4d4d;
+  --danger-200: #b30000;
+
+  --card-spade: var(--neutral-500);
+  --card-spade-icon: #1e1e1e;
+  --card-heart: var(--danger-100);
+  --card-heart-icon: var(--danger-200);
+  --card-diamond: #4d79ff;
+  --card-diamond-icon: #002699;
+  --card-club: #2ecc71;
+  --card-club-icon: #1d8348;
+
   --text: #6b6375;
   --text-h: #08060d;
-  --bg: #333333;
+  --bg: var(--neutral-100);
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
   --accent: #aa3bff;
