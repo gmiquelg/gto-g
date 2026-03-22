@@ -10,8 +10,13 @@ const HeaderMenu = ({ title }) => {
         }
 
         fetch('/api/menus/MMAIN')
-            .then(res => res.json())
-            .then(data => setMenuItems(data))
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                setMenuItems(Array.isArray(data) ? data : []);
+            })
             .catch(err => console.error("Failed to fetch menu", err));
     }, [title]);
 

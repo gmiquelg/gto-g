@@ -135,3 +135,11 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.button-primary {
+  @apply bg-brand-100 hover:bg-brand-200 border-2 border-brand-100 hover:border-brand-200 hover:text-neutral-100 text-neutral-100 font-bold;
+}
+
+.button-secondary {
+  @apply bg-neutral-200 hover:bg-neutral-300 border-2 border-brand-100 hover:border-brand-200 hover:text-brand-100 text-brand-100 font-bold;
+}

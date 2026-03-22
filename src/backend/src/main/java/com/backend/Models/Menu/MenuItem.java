@@ -26,7 +26,7 @@ public class MenuItem {
     private Integer order;
 
     @ManyToOne
-    @JoinColumn(name = "menu_id")
+    @JoinColumn(name = "fk_menu_id")
     @JsonIgnore
     private Menu menu;
 
